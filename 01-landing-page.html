@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's Blocking Your First eBook? — Take the Free Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0c0a;
+    --cream: #f5f0e8;
+    --gold: #c9963a;
+    --gold-light: #f0c96a;
+    --warm: #e8dcc8;
+    --muted: #6b6460;
+    --accent: #1a3a2a;
+    --white: #ffffff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    border-bottom: 1px solid rgba(201,150,58,0.15);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 0.02em;
+  }
+  .nav-tag {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid rgba(201,150,58,0.25);
+    padding: 6px 16px;
+    border-radius: 40px;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 80px 48px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 7vw, 88px);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    max-width: 800px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.35s;
+  }
+
+  .hero-headline em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-split {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 80px;
+    margin-top: 60px;
+    align-items: start;
+  }
+
+  .hero-body {
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  .hero-body p {
+    font-size: 18px;
+    line-height: 1.75;
+    color: #b8ad9e;
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+
+  .promise-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .promise-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+  .promise-list li::before {
+    content: '→';
+    color: var(--gold);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 18px 36px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.12);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,150,58,0.35); }
+  .cta-primary:hover::after { opacity: 1; }
+
+  .cta-sub {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* CARD PANEL */
+  .hero-card {
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.6s;
+  }
+
+  .quiz-preview-card {
+    background: linear-gradient(145deg, #1a1612 0%, #0f0e0b 100%);
+    border: 1px solid rgba(201,150,58,0.2);
+    border-radius: 16px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz-preview-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(201,150,58,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  .persona-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .persona-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,150,58,0.1);
+    background: rgba(201,150,58,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .persona-item:hover {
+    border-color: rgba(201,150,58,0.35);
+    background: rgba(201,150,58,0.08);
+    transform: translateX(4px);
+  }
+  .persona-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(201,150,58,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .persona-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cream);
+  }
+  .persona-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .card-cta {
+    width: 100%;
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+  }
+  .card-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .card-trust {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* SOCIAL PROOF */
+  .proof-bar {
+    border-top: 1px solid rgba(201,150,58,0.1);
+    border-bottom: 1px solid rgba(201,150,58,0.1);
+    padding: 24px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.8s;
+  }
+  .proof-stat {
+    text-align: center;
+  }
+  .proof-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .proof-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .proof-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(201,150,58,0.15);
+  }
+
+  /* HOW IT WORKS */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 48px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .section-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--cream);
+    max-width: 600px;
+    margin-bottom: 56px;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .step-card {
+    padding: 32px;
+    border: 1px solid rgba(201,150,58,0.12);
+    border-radius: 12px;
+    background: rgba(201,150,58,0.03);
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .step-card:hover {
+    border-color: rgba(201,150,58,0.3);
+    background: rgba(201,150,58,0.06);
+    transform: translateY(-4px);
+  }
+  .step-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: rgba(201,150,58,0.15);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .step-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .step-body {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* CREATOR TYPES */
+  .types-section {
+    background: rgba(201,150,58,0.04);
+    border-top: 1px solid rgba(201,150,58,0.1);
+    border-bottom: 1px solid rgba(201,150,58,0.1);
+    padding: 80px 48px;
+  }
+
+  .types-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .types-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+
+  .type-card {
+    padding: 28px 24px;
+    border: 1px solid rgba(201,150,58,0.15);
+    border-radius: 12px;
+    background: var(--ink);
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .type-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .type-emoji {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .type-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .type-tag {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .type-desc {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #9a9088;
+  }
+
+  /* FAITH BRIDGE */
+  .faith-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .faith-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 3.5vw, 38px);
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--cream);
+  }
+  .faith-quote span { color: var(--gold); }
+
+  .faith-body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #b8ad9e;
+  }
+  .faith-body p + p { margin-top: 20px; }
+
+  /* FINAL CTA */
+  .final-cta {
+    background: linear-gradient(135deg, #1a1410 0%, #0d0c0a 100%);
+    border-top: 1px solid rgba(201,150,58,0.15);
+    padding: 100px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(201,150,58,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .final-cta-inner { position: relative; z-index: 1; }
+
+  .final-cta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 900;
+    color: var(--cream);
+    margin-bottom: 20px;
+    line-height: 1.1;
+  }
+  .final-cta p {
+    font-size: 18px;
+    color: #b8ad9e;
+    margin-bottom: 44px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .cta-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 48px;
+    border-top: 1px solid rgba(201,150,58,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .hero { padding: 48px 24px 40px; }
+    .hero-split { grid-template-columns: 1fr; gap: 48px; }
+    .proof-bar { flex-wrap: wrap; gap: 32px; padding: 24px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .types-grid { grid-template-columns: 1fr 1fr; }
+    .faith-section { grid-template-columns: 1fr; gap: 40px; }
+    .section { padding: 60px 24px; }
+    .types-section { padding: 60px 24px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Story2Income</div>
+  <span class="nav-tag">Free Quiz</span>
+</nav>
+
+<section class="hero">
+  <span class="hero-eyebrow">60-second assessment</span>
+  <h1 class="hero-headline">
+    Your story is worth<br><em>more than you know.</em><br>Find out what's blocking you.
+  </h1>
+
+  <div class="hero-split">
+    <div class="hero-body">
+      <p>
+        Most people who've been through real life are sitting on a product, a message, and a business — and they don't even know it. Take this free quiz to discover exactly what's in the way.
+      </p>
+      <ul class="promise-list">
+        <li>Discover your Creator Type in under 60 seconds</li>
+        <li>Get a personalized breakdown of what's blocking you</li>
+        <li>Receive a custom 4-step plan to move forward</li>
+        <li>Find out how to turn your story into real income</li>
+      </ul>
+      <a href="YOUR-TALLY-QUIZ-URL" class="cta-primary">
+        Take the Free Quiz
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <span class="cta-sub">No email required to start · 100% free</span>
+    </div>
+
+    <div class="hero-card">
+      <div class="quiz-preview-card">
+        <p class="card-label">Discover your type</p>
+        <ul class="persona-list">
+          <li class="persona-item">
+            <div class="persona-icon">🧠</div>
+            <div>
+              <div class="persona-name">The Overthinker</div>
+              <div class="persona-sub">Has ideas. Hasn't started.</div>
+            </div>
+          </li>
+          <li class="persona-item">
+            <div class="persona-icon">📖</div>
+            <div>
+              <div class="persona-name">The Story Holder</div>
+              <div class="persona-sub">Has value. Lacks confidence.</div>
+            </div>
+          </li>
+          <li class="persona-item">
+            <div class="persona-icon">⚡</div>
+            <div>
+              <div class="persona-name">The Starter</div>
+              <div class="persona-sub">Started. Keeps stopping.</div>
+            </div>
+          </li>
+          <li class="persona-item">
+            <div class="persona-icon">🚀</div>
+            <div>
+              <div class="persona-name">The Builder</div>
+              <div class="persona-sub">Ready to publish and sell.</div>
+            </div>
+          </li>
+        </ul>
+        <a href="YOUR-TALLY-QUIZ-URL" class="card-cta">Start My Quiz →</a>
+        <p class="card-trust">Takes less than 60 seconds</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="proof-bar">
+  <div class="proof-stat">
+    <div class="proof-number">40+</div>
+    <div class="proof-label">Pages of strategy</div>
+  </div>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <div class="proof-number">4</div>
+    <div class="proof-label">Creator types</div>
+  </div>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <div class="proof-number">12</div>
+    <div class="proof-label">Chapter framework</div>
+  </div>
+  <div class="proof-divider"></div>
+  <div class="proof-stat">
+    <div class="proof-number">60s</div>
+    <div class="proof-label">To your result</div>
+  </div>
+</div>
+
+<section class="section">
+  <p class="section-label">How it works</p>
+  <h2 class="section-headline">Personalized insight. Not generic advice.</h2>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-number">01</div>
+      <h3 class="step-title">Answer 10 quick questions</h3>
+      <p class="step-body">Tell us where you are, what's stopping you, and what you want. No judgment, no overthinking required.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">02</div>
+      <h3 class="step-title">Get your Creator Type</h3>
+      <p class="step-body">Our AI reads your answers and builds a result that mirrors your actual situation — not a generic archetype.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-number">03</div>
+      <h3 class="step-title">Receive your custom plan</h3>
+      <p class="step-body">Walk away with a clear 4-step path to write, publish, and monetize your first eBook — built for where you are right now.</p>
+    </div>
+  </div>
+</section>
+
+<div class="types-section">
+  <div class="types-inner">
+    <p class="section-label">The four creator types</p>
+    <h2 class="section-headline">Which one are you?</h2>
+    <div class="types-grid">
+      <div class="type-card">
+        <span class="type-emoji">🧠</span>
+        <div class="type-name">The Overthinker</div>
+        <span class="type-tag">Most common</span>
+        <p class="type-desc">You've got ideas stacking up but can't seem to start. The block is in your head, not your ability.</p>
+      </div>
+      <div class="type-card">
+        <span class="type-emoji">📖</span>
+        <div class="type-name">The Story Holder</div>
+        <span class="type-tag">Has the most value</span>
+        <p class="type-desc">You've been through real things. You just haven't learned to package what you've lived into what others will pay for.</p>
+      </div>
+      <div class="type-card">
+        <span class="type-emoji">⚡</span>
+        <div class="type-name">The Starter</div>
+        <span class="type-tag">Closest to done</span>
+        <p class="type-desc">You've begun but can't seem to finish. You need a system more than motivation.</p>
+      </div>
+      <div class="type-card">
+        <span class="type-emoji">🚀</span>
+        <div class="type-name">The Builder</div>
+        <span class="type-tag">Ready to monetize</span>
+        <p class="type-desc">You're past the basics. You need to know how to sell what you've created and build something that scales.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="faith-section">
+  <div>
+    <blockquote class="faith-quote">
+      "Your story didn't break you.<br>It <span>built</span> you."
+    </blockquote>
+  </div>
+  <div class="faith-body">
+    <p>There's a reason you're still standing after everything you've been through. What you survived, what you learned, what changed you — that's not just your past. That's your product.</p>
+    <p>Purpose and profit don't have to fight each other. When you package your experience the right way, you can help someone else and create real income at the same time.</p>
+    <p>This quiz helps you figure out exactly where to start.</p>
+  </div>
+</div>
+
+<div class="final-cta">
+  <div class="final-cta-inner">
+    <h2>Find out what's blocking you.<br>Get your plan.</h2>
+    <p>Takes less than 60 seconds. Personalized results. Free.</p>
+    <div class="cta-group">
+      <a href="YOUR-TALLY-QUIZ-URL" class="cta-primary">
+        Start My Free Quiz
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <span class="cta-sub">No email required to start · 100% free · No spam</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>© 2026 Story2Income. All rights reserved.</span>
+  <span>Privacy Policy · Terms</span>
+</footer>
+
+</body>
+</html>

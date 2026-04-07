@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Quiz Results — Story2Income</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0d0c0a;
+    --cream: #f5f0e8;
+    --gold: #c9963a;
+    --gold-light: #f0c96a;
+    --warm: #e8dcc8;
+    --muted: #6b6460;
+    --accent: #1a3a2a;
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* LOADING STATE */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 900;
+    transition: opacity 0.5s ease;
+  }
+  .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .loading-ring {
+    width: 56px; height: 56px;
+    border: 2px solid rgba(201,150,58,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  .loading-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MAIN LAYOUT */
+  .page-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 32px 100px;
+    opacity: 0;
+    transition: opacity 0.6s ease 0.3s;
+  }
+  .page-wrap.visible { opacity: 1; }
+
+  /* RESULT HEADER */
+  .result-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-bottom: 60px;
+    border-bottom: 1px solid rgba(201,150,58,0.15);
+  }
+
+  .result-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .result-eyebrow::before, .result-eyebrow::after {
+    content: '';
+    width: 40px; height: 1px;
+    background: rgba(201,150,58,0.4);
+  }
+
+  .persona-badge {
+    display: inline-block;
+    background: rgba(201,150,58,0.1);
+    border: 1px solid rgba(201,150,58,0.35);
+    padding: 6px 20px;
+    border-radius: 40px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .result-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 62px);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+  .result-title em { color: var(--gold); font-style: italic; }
+
+  /* RESULT SECTIONS */
+  .result-section {
+    margin-bottom: 48px;
+    padding: 36px;
+    border: 1px solid rgba(201,150,58,0.1);
+    border-radius: 12px;
+    background: rgba(201,150,58,0.02);
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .section-icon {
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+
+  .section-heading {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+
+  .section-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #c8bfb3;
+  }
+
+  /* STEPS LIST */
+  .steps-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(201,150,58,0.12);
+    border: 1px solid rgba(201,150,58,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-content {
+    font-size: 15px;
+    color: #c8bfb3;
+    line-height: 1.6;
+  }
+  .step-content strong {
+    color: var(--cream);
+    font-weight: 500;
+  }
+
+  /* OFFER SECTION */
+  .offer-section {
+    background: linear-gradient(145deg, #1a1612 0%, #141210 100%);
+    border: 1px solid rgba(201,150,58,0.25);
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .offer-section::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(201,150,58,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .offer-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .offer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .offer-sub {
+    font-size: 16px;
+    color: #b8ad9e;
+    line-height: 1.65;
+    margin-bottom: 32px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .offer-bullets {
+    list-style: none;
+    text-align: left;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+  .offer-bullets li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #c8bfb3;
+  }
+  .offer-bullets li::before {
+    content: '✓';
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .price-block {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .price-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .price-label {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 18px 44px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,150,58,0.35); }
+
+  .cta-guarantee {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+
+  /* ORDER BUMP */
+  .bump-box {
+    border: 1px dashed rgba(201,150,58,0.3);
+    border-radius: 10px;
+    padding: 24px 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: rgba(201,150,58,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 24px;
+  }
+  .bump-box:hover { border-color: rgba(201,150,58,0.6); background: rgba(201,150,58,0.07); }
+  .bump-checkbox {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(201,150,58,0.5);
+    flex-shrink: 0;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+    transition: all 0.2s;
+  }
+  .bump-checkbox.checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .bump-checkbox.checked::after {
+    content: '✓';
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .bump-text {}
+  .bump-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .bump-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+  .bump-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .bump-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .page-wrap { padding: 40px 20px 80px; }
+    .offer-section { padding: 32px 24px; }
+    .result-section { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading state -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-ring"></div>
+  <p class="loading-text">Analyzing your answers…</p>
+</div>
+
+<div class="page-wrap" id="pageWrap">
+
+  <!-- Result Header -->
+  <div class="result-header">
+    <div class="result-eyebrow">Your personalized result</div>
+    <div class="persona-badge" id="personaBadge">The Story Holder</div>
+    <h1 class="result-title" id="resultTitle">
+      You are<br><em id="personaName">The Story Holder</em>
+    </h1>
+  </div>
+
+  <!-- Section 1: Mirror -->
+  <div class="result-section" style="animation-delay:0.1s">
+    <div class="section-icon">🔍</div>
+    <p class="section-heading">What this really means</p>
+    <p class="section-text" id="mirrorText">
+      <!-- GHL Dynamic Variable: {{contact.custom_result_mirror}} -->
+      You've been through things most people couldn't handle. And instead of turning that into something powerful, you've been holding it in — not because you don't have value, but because you haven't had a clear way to package it. That ends today.
+    </p>
+  </div>
+
+  <!-- Section 2: Block -->
+  <div class="result-section" style="animation-delay:0.2s">
+    <div class="section-icon">🧱</div>
+    <p class="section-heading">What's really blocking you</p>
+    <p class="section-text" id="blockText">
+      <!-- GHL Dynamic Variable: {{contact.custom_result_block}} -->
+      The real issue isn't motivation or talent. It's that you've been waiting to feel "ready" — and that moment never comes unless something forces your hand. You don't need more research. You need a starting point and a structure that removes the guesswork.
+    </p>
+  </div>
+
+  <!-- Section 3: Faith -->
+  <div class="result-section" style="animation-delay:0.3s">
+    <div class="section-icon">✨</div>
+    <p class="section-heading">A word for your journey</p>
+    <p class="section-text" id="faithText">
+      <!-- GHL Dynamic Variable: {{contact.custom_result_faith}} -->
+      There's a reason your story didn't destroy you. Everything you walked through was preparation — for the message you're about to deliver and the lives you're about to change. Your testimony is someone else's roadmap.
+    </p>
+  </div>
+
+  <!-- Section 4: Action Plan -->
+  <div class="result-section" style="animation-delay:0.4s">
+    <div class="section-icon">🗺️</div>
+    <p class="section-heading">Your next 4 steps</p>
+    <ul class="steps-list" id="stepsList">
+      <!-- GHL Dynamic Variable: populated by JS from {{contact.custom_result_steps}} -->
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content"><strong>Choose one message.</strong> Pick the single biggest thing you've learned, survived, or overcome. That's your book.</div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content"><strong>Break it into 12 chapters.</strong> Each chapter is one lesson, one story, or one step in a process. Don't overthink the outline.</div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content"><strong>Write messy first.</strong> The first draft is never the final draft. Give yourself permission to write badly so you can edit it into something great.</div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content"><strong>Package and publish fast.</strong> A simple PDF and a payment link is a business. Don't wait for perfection to make your first dollar.</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ORDER BUMP -->
+  <div class="bump-box" id="bumpBox" onclick="toggleBump()">
+    <div class="bump-checkbox" id="bumpCheck"></div>
+    <div class="bump-text">
+      <div class="bump-label">Add-on offer</div>
+      <div class="bump-title">Chapter Outline Templates + 12-Step Blueprint Sheet</div>
+      <div class="bump-desc">Pre-built chapter frameworks so you never stare at a blank page again. Drag, drop, fill in your story.</div>
+    </div>
+    <div class="bump-price">+$17</div>
+  </div>
+
+  <!-- MAIN OFFER -->
+  <div class="offer-section">
+    <p class="offer-eyebrow">The system that fixes it</p>
+    <h2 class="offer-title">Turn Your Story Into Income<br>in 7 Days or Less</h2>
+    <p class="offer-sub">
+      A complete step-by-step guide for people who've never written before. Built around the same framework that produced your result above.
+    </p>
+    <ul class="offer-bullets">
+      <li>How to choose the message that will sell</li>
+      <li>The 12-chapter structure that makes writing simple</li>
+      <li>How to write 40 pages even if you hate writing</li>
+      <li>How to publish and set up your first income stream</li>
+      <li>Marketing strategies that work without an audience</li>
+    </ul>
+
+    <div class="price-block">
+      <div class="price-amount">$27</div>
+      <div class="price-label">one-time · instant access</div>
+    </div>
+
+    <!-- REPLACE href WITH YOUR GHL ORDER FORM URL OR GUMROAD LINK -->
+    <a href="YOUR-CHECKOUT-URL" class="cta-primary" id="mainCta">
+      Get Instant Access
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <p class="cta-guarantee">7-day money-back guarantee · No questions asked</p>
+  </div>
+
+</div>
+
+<script>
+  // ================================================
+  // GHL CUSTOM VALUE INJECTION
+  // GHL will replace these variables before serving the page
+  // OR you can pass them as URL params from n8n webhook redirect
+  // ================================================
+
+  const GHL_VARS = {
+    persona:   '{{contact.custom_quiz_persona}}',
+    mirror:    '{{contact.custom_result_mirror}}',
+    block:     '{{contact.custom_result_block}}',
+    faith:     '{{contact.custom_result_faith}}',
+    firstName: '{{contact.first_name}}'
+  };
+
+  // FALLBACK: read from URL params (set by n8n redirect)
+  function getParam(key) {
+    const val = GHL_VARS[key];
+    // If GHL hasn't replaced the variable, fall back to URL param
+    if (val && !val.startsWith('{{')) return val;
+    return new URLSearchParams(window.location.search).get(key) || null;
+  }
+
+  const personas = {
+    'Overthinker': {
+      icon: '🧠',
+      title: 'The Overthinker',
+      mirror: "You've had the ideas. You've researched. You've planned. But somehow the first page never gets written. That's not a laziness problem — that's a clarity problem. You're trying to get everything perfect before you start, and perfect is the enemy of published.",
+      block: "What's blocking you is an invisible standard you're holding yourself to. You're waiting to know enough, feel ready enough, or have enough time. The truth is, people with less knowledge than you have already published and are already making money.",
+      faith: "God didn't give you those ideas to gather dust. The fact that they keep coming back means something. At some point, clarity comes from doing, not from planning. Your first move doesn't have to be perfect — it just has to be made."
+    },
+    'Story Holder': {
+      icon: '📖',
+      title: 'The Story Holder',
+      mirror: "You've been through real things. You have life experience, hard-won lessons, and a perspective that could genuinely change someone's direction. But you've been sitting on it — not sure if it's valuable, not sure if anyone would pay for it, not sure where to even start.",
+      block: "What's blocking you is a confidence gap, not a knowledge gap. You don't feel 'qualified' to teach — but the people who need your story aren't looking for a PhD. They're looking for someone who's been where they are and made it out.",
+      faith: "Your story has weight because you paid for it. Every hard thing you went through gave you something that someone else desperately needs. Don't let the enemy of comparison talk you out of sharing what you've built."
+    },
+    'Starter': {
+      icon: '⚡',
+      title: 'The Starter',
+      mirror: "You've already begun. You've had momentum at some point — maybe you've outlined, started writing, or even gotten halfway through. But something always interrupts the progress, and you end up back at square one wondering why you can't finish what you start.",
+      block: "What's blocking you isn't motivation — it's a missing system. When the inspiration runs out, you need structure to carry you through. Without a clear framework and a deadline, most people stall at the same point every time.",
+      faith: "Starting is the hardest part, and you've already done it. That means you have something most people don't: proof that you can begin. Now you just need the structure to finish."
+    },
+    'Builder': {
+      icon: '🚀',
+      title: 'The Builder',
+      mirror: "You're past the basics. You've probably created something — maybe you've even sold something. You're here because you want to build bigger, faster, and more strategically. You're done playing small and ready to treat this like a real business.",
+      block: "What's blocking you isn't ability — it's strategy. You need a repeatable system to acquire customers, convert them, and scale what's working. Right now you're doing things manually that should be automated.",
+      faith: "The foundation you've built wasn't an accident. Every lesson, every mistake, every small win was preparation for the next level. You have more momentum than you realize — now it's time to put it in a framework."
+    }
+  };
+
+  function init() {
+    const persona = getParam('persona') || 'Story Holder';
+    const firstName = getParam('firstName') || '';
+    const data = personas[persona] || personas['Story Holder'];
+
+    // Update UI
+    document.getElementById('personaBadge').textContent = data.title;
+    document.getElementById('personaName').textContent = data.title;
+
+    const mirrorEl = document.getElementById('mirrorText');
+    const blockEl = document.getElementById('blockText');
+    const faithEl = document.getElementById('faithText');
+
+    // Use GHL-injected custom values if available, fallback to local copy
+    const mirrorVal = getParam('mirror');
+    const blockVal = getParam('block');
+    const faithVal = getParam('faith');
+
+    mirrorEl.textContent = (mirrorVal && !mirrorVal.startsWith('{{')) ? mirrorVal : data.mirror;
+    blockEl.textContent  = (blockVal  && !blockVal.startsWith('{{'))  ? blockVal  : data.block;
+    faithEl.textContent  = (faithVal  && !faithVal.startsWith('{{'))  ? faithVal  : data.faith;
+
+    // Show page
+    setTimeout(() => {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+      document.getElementById('pageWrap').classList.add('visible');
+    }, 1800);
+  }
+
+  let bumpChecked = false;
+  function toggleBump() {
+    bumpChecked = !bumpChecked;
+    const box = document.getElementById('bumpCheck');
+    bumpChecked ? box.classList.add('checked') : box.classList.remove('checked');
+    // Update CTA URL to include bump param for checkout
+    const cta = document.getElementById('mainCta');
+    const baseUrl = 'YOUR-CHECKOUT-URL';
+    cta.href = bumpChecked ? baseUrl + '?bump=1' : baseUrl;
+  }
+
+  init();
+</script>
+</body>
+</html>

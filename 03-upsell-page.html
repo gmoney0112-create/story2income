@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One-Time Upgrade — Story2Income</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0d0c0a;
+    --cream: #f5f0e8;
+    --gold: #c9963a;
+    --muted: #6b6460;
+  }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  .upsell-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 60px 32px 80px;
+    text-align: center;
+  }
+
+  .congrats-bar {
+    background: rgba(201,150,58,0.1);
+    border: 1px solid rgba(201,150,58,0.25);
+    border-radius: 8px;
+    padding: 14px 24px;
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+  h1 em { color: var(--gold); font-style: italic; }
+
+  .lede {
+    font-size: 17px;
+    line-height: 1.75;
+    color: #b8ad9e;
+    margin-bottom: 48px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .offer-card {
+    background: linear-gradient(145deg, #1a1612, #0f0e0b);
+    border: 1px solid rgba(201,150,58,0.2);
+    border-radius: 16px;
+    padding: 48px 40px;
+    margin-bottom: 28px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .offer-card::before {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(201,150,58,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .what-youll-get {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 28px;
+  }
+
+  .feature-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 36px;
+  }
+  .feature-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .feature-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(201,150,58,0.1);
+    border: 1px solid rgba(201,150,58,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .feature-content {}
+  .feature-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+  .feature-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(201,150,58,0.12);
+    margin: 32px 0;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .price-label { font-size: 14px; color: var(--muted); }
+  .price-strike { font-size: 18px; color: var(--muted); text-decoration: line-through; }
+  .price-today {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  .price-note { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+
+  .cta-yes {
+    display: block;
+    width: 100%;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 18px 36px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .cta-yes:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,150,58,0.3); }
+
+  .cta-no {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 12px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+  }
+  .cta-no:hover { color: #a89990; }
+
+  .urgency-note {
+    font-size: 12px;
+    color: rgba(201,150,58,0.7);
+    letter-spacing: 0.04em;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .faq-section {
+    text-align: left;
+  }
+  .faq-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+  .faq-item {
+    border-top: 1px solid rgba(201,150,58,0.1);
+    padding: 18px 0;
+  }
+  .faq-q { font-size: 15px; font-weight: 500; color: var(--cream); margin-bottom: 8px; }
+  .faq-a { font-size: 14px; color: var(--muted); line-height: 1.65; }
+</style>
+</head>
+<body>
+
+<div class="upsell-wrap">
+
+  <div class="congrats-bar">
+    ✓ Your eBook purchase is confirmed — check your email for instant access
+  </div>
+
+  <p class="eyebrow">One-time offer — this page only</p>
+  <h1>Let AI Write Your<br>eBook <em>With</em> You</h1>
+  <p class="lede">
+    You have the system. Now get the AI engine that removes writer's block completely — 100+ prompts, chapter generators, and done-for-you sales copy built specifically for eBook creators.
+  </p>
+
+  <p class="urgency-note">⚡ This offer is only available right now — it won't appear again</p>
+
+  <div class="offer-card">
+    <h2 class="what-youll-get">Everything in the AI eBook Writing System:</h2>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-content">
+          <div class="feature-title">100+ AI Writing Prompts</div>
+          <div class="feature-desc">Chapter openers, transitions, conclusions, and hook lines — one prompt per section of your 12-chapter framework.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📋</div>
+        <div class="feature-content">
+          <div class="feature-title">Chapter Generator Templates</div>
+          <div class="feature-desc">Fill-in-the-blank chapter structures for all four Creator Types. Never stare at a blank page again.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">💰</div>
+        <div class="feature-content">
+          <div class="feature-title">Sales Copy Toolkit</div>
+          <div class="feature-desc">Landing page headlines, email subject lines, and social media hooks written for your exact niche — faith-based, money-focused, story-driven.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-content">
+          <div class="feature-title">Launch Checklist + Timeline</div>
+          <div class="feature-desc">A step-by-step 7-day launch plan so you know exactly what to do each day from "blank page" to "first sale."</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📱</div>
+        <div class="feature-content">
+          <div class="feature-title">30 Social Media Scripts</div>
+          <div class="feature-desc">TikTok/Reels video scripts in your brand voice — hook, body, and CTA — ready to record today.</div>
+        </div>
+      </li>
+    </ul>
+
+    <hr class="divider">
+
+    <div class="price-row">
+      <span class="price-label">Regular price</span>
+      <span class="price-strike">$197</span>
+    </div>
+    <div class="price-row">
+      <span class="price-label">Today only</span>
+      <span class="price-today">$97</span>
+    </div>
+    <p class="price-note">One payment. Instant access. Yours forever.</p>
+
+    <!-- REPLACE WITH YOUR GHL UPSELL ORDER FORM URL -->
+    <a href="YOUR-UPSELL-CHECKOUT-URL" class="cta-yes">
+      Yes — Add the AI System for $97 →
+    </a>
+    <a href="YOUR-THANK-YOU-PAGE-URL" class="cta-no">
+      No thanks, I'll write everything from scratch
+    </a>
+  </div>
+
+  <div class="faq-section">
+    <h3 class="faq-heading">Quick answers</h3>
+    <div class="faq-item">
+      <p class="faq-q">Do I need to know how to use AI to use this?</p>
+      <p class="faq-a">No. Everything is copy-paste ready. You don't need a ChatGPT account or any technical skills — though it works even better if you do use AI tools.</p>
+    </div>
+    <div class="faq-item">
+      <p class="faq-q">Is this different from what's in the eBook I just bought?</p>
+      <p class="faq-a">Yes. The eBook gives you the strategy and structure. This toolkit gives you the actual writing fuel — prompts, templates, and scripts — so the process is faster and less painful.</p>
+    </div>
+    <div class="faq-item">
+      <p class="faq-q">What if I already have an idea for my book?</p>
+      <p class="faq-a">Even better. These tools are designed to plug directly into whatever topic or story you're working on. They work for any niche.</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
